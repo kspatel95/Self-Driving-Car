@@ -255,8 +255,9 @@ Here are some examples of how the network behaves in the simulator and on the pa
 [![ROSbag][image4])](https://drive.google.com/open?id=1rWTJ7Yh6Jdcscb8soLvVjky6InssjkzS)
 [![Simulation][image3])](https://drive.google.com/open?id=17fBt88zy1Yr9ifKuiiNJQACBlf09buy1)
 
-######Labeling
- ![][image9]
+#####Labeling
+
+![][image9]
  
  As we mentioned above, in addition to manual annotations, we have also
   developed a tool to generate labeled images.
@@ -275,7 +276,7 @@ The result can be seen in annotated video form:
 
 [![sample annotated_image](writeup_illustrations/annot_r_train_0017.png)](https://drive.google.com/open?id=1afkYOZbZMM9NxO1_l_QJSFi4uJJJLzxe)
 
-######Incoming image processing
+#####Incoming image processing
 
 There are 2 separate topics where camera images are published: image_color and
  image_raw.
@@ -293,7 +294,7 @@ dataset and capture the /image_* topics in a ROS node loses a lot of frames due 
 The neural network training algorithm will heavily distort the images during the training process to prevent overtraining, therefore
 we judged that undistorting images before prediction would provide no substantial recognition quality improvement.
 
-######Testing
+#####Testing
 
 To confirm that traffic light detection works on real life images, we used the ROSbag playback while the simulator was running as well.
 The car was "parked" before a traffic light in the simulator by manually crashing it into a tree. This was necessary to trigger the detection.
