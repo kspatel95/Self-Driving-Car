@@ -153,6 +153,7 @@ Based on the literature, there are two obvious candidates for an SSD style
 MobileNet SSD V1 224 with training data from the Mobile Zoo as one candidate
 , and YoloV3-tiny-pnr as another one.  
 
+###### MobileNet SSD
 First, we integrated MobileNet SSD into the ROS environment. We included it
  in the trafficlight_capture node, and outputted the detection results
   (colored rectangles overlaid on the camera image) into a new, `/image_recognized`
@@ -163,6 +164,8 @@ After lowering the threshold detection confidence to 20%, the MobileNet SSD
  network was finding most of the traffic lights in the simulator, but it
   also found a lot of side-facing and back-facing traffic lights as well. 
   It also didn't do a whole lot of recognizing with the real-world images from the ROSbag. 
+
+###### Yolo PRN
 
 So after some research we identified the Yolo family as another potentially
  acceptable trade-off between speed and quality. The full-blown YoloV4 was
@@ -188,6 +191,8 @@ So we looked at pulling in darknet, the original execution environment of
      essential shortcomings (extraneous bounding boxes on rear-facing and
       side-facing traffic lights, missed traffic lights, major difficulties
        with the parking lot scenario).
+
+###### Secondary classification
 
 The secondary classifier works on small images, once the primary classifier identified the box of a traffic light.
 There are 2 possible solutions, either try to use CV tools to classify, or train a separate neural network.
@@ -244,8 +249,17 @@ The next challenge was to obtain an augmented dataset which includes color
   over 1600 labeled images, which was sufficient to get fairly robust training
    results. The performance of the model never reached 100%, but we got to the point where
    the network was making a mistake on only 2 or 3 images out of the roughly 2000 images in the ROSbag.   
+
+Here are some examples of how the network behaves in the simulator and on the parking lot images from the ROSbag:
+
+[![ROSbag][image4])](https://drive.google.com/open?id=1rWTJ7Yh6Jdcscb8soLvVjky6InssjkzS)
+[![Simulation][image3])](https://drive.google.com/open?id=17fBt88zy1Yr9ifKuiiNJQACBlf09buy1)
+
+######Labeling
+ ![][image9]
  
-![][image9]
+ As we mentioned above, in addition to manual annotations, we have also
+  developed a tool to generate labeled images.
 
 The semi-automated annotation tool is in trainer/AutoAnnot.ipynb.
 It uses the manually edited annot_hint.txt file, and the images from the training ROSbag file.
@@ -261,12 +275,10 @@ The result can be seen in annotated video form:
 
 [![sample annotated_image](writeup_illustrations/annot_r_train_0017.png)](https://drive.google.com/open?id=1afkYOZbZMM9NxO1_l_QJSFi4uJJJLzxe)
 
-Here are some examples of how the network behaves in the simulator and on the parking lot images from the ROSbag:
+######Incoming image processing
 
-[![ROSbag][image4])](https://drive.google.com/open?id=1rWTJ7Yh6Jdcscb8soLvVjky6InssjkzS)
-[![Simulation][image3])](https://drive.google.com/open?id=17fBt88zy1Yr9ifKuiiNJQACBlf09buy1)
-
-There are 2 separate topics for image: image_color and image_raw.
+There are 2 separate topics where camera images are published: image_color and
+ image_raw.
 The simulator only sends image_color, the Just and the Loop ROSbag files only had image_raw, the Train ROSbag had both.
 The Traffic Light Detector subscribes for both topics. If both topics have messages at the same time, image_color has priority.
 Ihe image_raw uses Bayer-encoded black and white image, which is converted to color using OpenCV.
@@ -280,6 +292,8 @@ dataset and capture the /image_* topics in a ROS node loses a lot of frames due 
 
 The neural network training algorithm will heavily distort the images during the training process to prevent overtraining, therefore
 we judged that undistorting images before prediction would provide no substantial recognition quality improvement.
+
+######Testing
 
 To confirm that traffic light detection works on real life images, we used the ROSbag playback while the simulator was running as well.
 The car was "parked" before a traffic light in the simulator by manually crashing it into a tree. This was necessary to trigger the detection.
